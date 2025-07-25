@@ -1,0 +1,55 @@
+# Use Node.js 22 Alpine as base image
+FROM node:22-alpine AS builder
+
+# Install git to clone the repository
+RUN apk add --no-cache git
+
+# Set working directory for building the custom node
+WORKDIR /custom-node
+
+# Clone the repository from GitHub
+ARG GITHUB_REPO=https://github.com/notscottsmith/n8n-nodes-cin7.git
+ARG BRANCH=main
+RUN git clone --depth 1 --branch ${BRANCH} ${GITHUB_REPO} .
+
+# Install ALL dependencies (including devDependencies for building)
+RUN npm ci
+
+# Build the custom node
+RUN npm run build
+
+# Install only production dependencies for the final build
+RUN npm ci --only=production
+
+# Start with the official n8n image
+FROM n8nio/n8n:latest
+
+# Switch to root to install custom node
+USER root
+
+# Create the proper custom nodes directory
+RUN mkdir -p /home/node/.n8n/custom
+
+# Copy the built custom node to the correct location
+COPY --from=builder /custom-node /home/node/.n8n/custom/n8n-nodes-cin7
+
+# Navigate to the custom node directory and create the npm link
+WORKDIR /home/node/.n8n/custom/n8n-nodes-cin7
+RUN npm link
+
+# Navigate to the custom directory and link the package
+WORKDIR /home/node/.n8n/custom
+RUN npm link n8n-nodes-cin7
+
+# Change ownership to node user
+RUN chown -R node:node /home/node/.n8n
+
+# Switch back to n8n user
+USER node
+
+# Set working directory
+WORKDIR /home/node
+
+# Use default entrypoint and command
+ENTRYPOINT ["tini", "--", "/usr/local/bin/docker-entrypoint.sh"]
+CMD ["n8n"]

@@ -21,8 +21,26 @@ export const productOperations: INodeProperties[] = [
             {
                 name: 'Get',
                 value: 'get',
-                description: 'Get a product',
+                description: 'Get a product by ID',
                 action: 'Get a product',
+            },
+            {
+                name: 'Get Availability',
+                value: 'getAvailability',
+                description: 'Get product availability information',
+                action: 'Get product availability',
+            },
+            {
+                name: 'Create',
+                value: 'create',
+                description: 'Create a new product',
+                action: 'Create a product',
+            },
+            {
+                name: 'Update',
+                value: 'update',
+                description: 'Update an existing product',
+                action: 'Update a product',
             },
         ],
         default: 'getAll',
@@ -30,6 +48,7 @@ export const productOperations: INodeProperties[] = [
 ];
 
 export const productFields: INodeProperties[] = [
+    // Get operation fields
     {
         displayName: 'Product ID',
         name: 'productId',
@@ -38,12 +57,14 @@ export const productFields: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['product'],
-                operation: ['get'],
+                operation: ['get', 'update'],
             },
         },
         default: '',
-        description: 'The ID of the product to retrieve',
+        description: 'The ID of the product',
     },
+
+    // Get All operation fields
     {
         displayName: 'Return All',
         name: 'returnAll',
@@ -51,7 +72,7 @@ export const productFields: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['product'],
-                operation: ['getAll'],
+                operation: ['getAll', 'getAvailability'],
             },
         },
         default: false,
@@ -64,7 +85,7 @@ export const productFields: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['product'],
-                operation: ['getAll'],
+                operation: ['getAll', 'getAvailability'],
                 returnAll: [false],
             },
         },
@@ -72,9 +93,11 @@ export const productFields: INodeProperties[] = [
             minValue: 1,
             maxValue: 1000,
         },
-        default: 100,
+        default: 50,
         description: 'Max number of results to return',
     },
+
+    // Additional fields for filtering
     {
         displayName: 'Additional Fields',
         name: 'additionalFields',
@@ -84,23 +107,16 @@ export const productFields: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['product'],
-                operation: ['getAll'],
+                operation: ['getAll', 'getAvailability'],
             },
         },
         options: [
-            {
-                displayName: 'Page',
-                name: 'page',
-                type: 'number',
-                default: 1,
-                description: 'Page number for pagination',
-            },
             {
                 displayName: 'Modified Since',
                 name: 'modifiedSince',
                 type: 'dateTime',
                 default: '',
-                description: 'Return products modified since this date',
+                description: 'Return only products modified since this date',
             },
             {
                 displayName: 'Include Discontinued',
@@ -109,6 +125,29 @@ export const productFields: INodeProperties[] = [
                 default: false,
                 description: 'Whether to include discontinued products',
             },
+            {
+                displayName: 'SKU',
+                name: 'sku',
+                type: 'string',
+                default: '',
+                description: 'Filter by SKU',
+            },
         ],
+    },
+
+    // Create/Update operation fields
+    {
+        displayName: 'Product Data',
+        name: 'productData',
+        type: 'json',
+        required: true,
+        displayOptions: {
+            show: {
+                resource: ['product'],
+                operation: ['create', 'update'],
+            },
+        },
+        default: '{\n  "Name": "",\n  "SKU": "",\n  "Type": "Stock",\n  "UOM": "Each"\n}',
+        description: 'Product data as JSON object',
     },
 ];

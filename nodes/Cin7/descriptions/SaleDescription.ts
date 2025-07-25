@@ -15,14 +15,38 @@ export const saleOperations: INodeProperties[] = [
             {
                 name: 'Get All',
                 value: 'getAll',
-                description: 'Get all sales from SaleList endpoint',
+                description: 'Get all sales',
                 action: 'Get all sales',
             },
             {
                 name: 'Get',
                 value: 'get',
-                description: 'Get a specific sale',
+                description: 'Get a sale by ID',
                 action: 'Get a sale',
+            },
+            {
+                name: 'Create',
+                value: 'create',
+                description: 'Create a new sale',
+                action: 'Create a sale',
+            },
+            {
+                name: 'Update',
+                value: 'update',
+                description: 'Update an existing sale',
+                action: 'Update a sale',
+            },
+            {
+                name: 'Authorise',
+                value: 'authorise',
+                description: 'Authorise a sale',
+                action: 'Authorise a sale',
+            },
+            {
+                name: 'Void',
+                value: 'void',
+                description: 'Void a sale',
+                action: 'Void a sale',
             },
         ],
         default: 'getAll',
@@ -38,11 +62,11 @@ export const saleFields: INodeProperties[] = [
         displayOptions: {
             show: {
                 resource: ['sale'],
-                operation: ['get'],
+                operation: ['get', 'update', 'authorise', 'void'],
             },
         },
         default: '',
-        description: 'The ID of the sale to retrieve',
+        description: 'The ID of the sale',
     },
     {
         displayName: 'Return All',
@@ -72,7 +96,7 @@ export const saleFields: INodeProperties[] = [
             minValue: 1,
             maxValue: 1000,
         },
-        default: 100,
+        default: 50,
         description: 'Max number of results to return',
     },
     {
@@ -89,48 +113,42 @@ export const saleFields: INodeProperties[] = [
         },
         options: [
             {
-                displayName: 'Page',
-                name: 'page',
-                type: 'number',
-                default: 1,
-                description: 'Page number for pagination',
-            },
-            {
                 displayName: 'Modified Since',
                 name: 'modifiedSince',
                 type: 'dateTime',
                 default: '',
-                description: 'Return sales modified since this date',
+                description: 'Return only sales modified since this date',
             },
             {
                 displayName: 'Status',
                 name: 'status',
                 type: 'options',
                 options: [
-                    {
-                        name: 'All',
-                        value: '',
-                    },
-                    {
-                        name: 'Draft',
-                        value: 'DRAFT',
-                    },
-                    {
-                        name: 'Authorised',
-                        value: 'AUTHORISED',
-                    },
-                    {
-                        name: 'Fulfilled',
-                        value: 'FULFILLED',
-                    },
-                    {
-                        name: 'Voided',
-                        value: 'VOIDED',
-                    },
+                    { name: 'Draft', value: 'Draft' },
+                    { name: 'Authorised', value: 'Authorised' },
+                    { name: 'Picked', value: 'Picked' },
+                    { name: 'Packed', value: 'Packed' },
+                    { name: 'Shipped', value: 'Shipped' },
+                    { name: 'Invoiced', value: 'Invoiced' },
+                    { name: 'Voided', value: 'Voided' },
                 ],
                 default: '',
                 description: 'Filter by sale status',
             },
         ],
+    },
+    {
+        displayName: 'Sale Data',
+        name: 'saleData',
+        type: 'json',
+        required: true,
+        displayOptions: {
+            show: {
+                resource: ['sale'],
+                operation: ['create', 'update'],
+            },
+        },
+        default: '{\n  "Customer": "",\n  "SaleOrderNumber": "",\n  "Status": "Draft"\n}',
+        description: 'Sale data as JSON object',
     },
 ];

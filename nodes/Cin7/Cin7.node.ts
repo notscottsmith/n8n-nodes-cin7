@@ -258,6 +258,31 @@ async function executeProductOperation(this: IExecuteFunctions, operation: strin
         return await cin7ApiRequest.call(this, 'GET', `/Product/${productId}`);
     }
 
+    if (operation === 'getAvailability') {
+        const returnAll = this.getNodeParameter('returnAll', index) as boolean;
+        const additionalFields = this.getNodeParameter('additionalFields', index, {}) as IDataObject;
+
+        if (returnAll) {
+            return await cin7ApiRequestAllItems.call(this, 'GET', '/ProductAvailability', {}, additionalFields);
+        } else {
+            const limit = this.getNodeParameter('limit', index) as number;
+            const qs: IDataObject = { limit, ...additionalFields };
+            const responseData = await cin7ApiRequest.call(this, 'GET', '/ProductAvailability', {}, qs);
+            return responseData.ProductAvailabilityList || [];
+        }
+    }
+
+    if (operation === 'create') {
+        const productData = this.getNodeParameter('productData', index) as IDataObject;
+        return await cin7ApiRequest.call(this, 'POST', '/Product', productData);
+    }
+
+    if (operation === 'update') {
+        const productId = this.getNodeParameter('productId', index) as string;
+        const productData = this.getNodeParameter('productData', index) as IDataObject;
+        return await cin7ApiRequest.call(this, 'PUT', `/Product/${productId}`, productData);
+    }
+
     throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
 }
 
@@ -301,6 +326,27 @@ async function executeSaleOperation(this: IExecuteFunctions, operation: string, 
     if (operation === 'get') {
         const saleId = this.getNodeParameter('saleId', index) as string;
         return await cin7ApiRequest.call(this, 'GET', `/Sale/${saleId}`);
+    }
+
+    if (operation === 'create') {
+        const saleData = this.getNodeParameter('saleData', index) as IDataObject;
+        return await cin7ApiRequest.call(this, 'POST', '/Sale', saleData);
+    }
+
+    if (operation === 'update') {
+        const saleId = this.getNodeParameter('saleId', index) as string;
+        const saleData = this.getNodeParameter('saleData', index) as IDataObject;
+        return await cin7ApiRequest.call(this, 'PUT', `/Sale/${saleId}`, saleData);
+    }
+
+    if (operation === 'authorise') {
+        const saleId = this.getNodeParameter('saleId', index) as string;
+        return await cin7ApiRequest.call(this, 'PUT', `/Sale/${saleId}/Authorise`);
+    }
+
+    if (operation === 'void') {
+        const saleId = this.getNodeParameter('saleId', index) as string;
+        return await cin7ApiRequest.call(this, 'PUT', `/Sale/${saleId}/Void`);
     }
 
     throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
