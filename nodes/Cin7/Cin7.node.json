@@ -1,0 +1,24 @@
+{
+	"node": "n8n-nodes-cin7",
+	"nodeVersion": ">=20.15",
+	"codexVersion": "0.1.0",
+	"categories": [
+		"n8n",
+        "cin7",
+        "ecommerce",
+        "inventory",
+        "api"
+	],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://dearinventory.docs.apiary.io/#introduction/connecting-to-the-api"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://dearinventory.docs.apiary.io/"
+			}
+		]
+	}
+}
